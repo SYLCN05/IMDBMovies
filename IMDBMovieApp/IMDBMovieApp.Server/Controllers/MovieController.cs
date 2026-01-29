@@ -60,7 +60,7 @@ namespace MovieApp.Server.Controllers
 
             if (exists)
             {
-              return  BadRequest("Film staat al in je lijst");
+              return  BadRequest("Movie is already inside of your playlist");
             }
 
             var watchListItem = new UserWatchList
@@ -74,6 +74,52 @@ namespace MovieApp.Server.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("Added the Movie to the watchlist");
+        }
+
+        [Authorize]
+        [HttpGet("get")]
+        public async Task<IActionResult> GetUserWatchList()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var exists = await _context.UserWatchLists.AnyAsync(uw => uw.UserId == userId);
+
+            if (exists)
+            {
+                var userWatchlist = await _context.UserWatchLists.Where(uw => uw.UserId == userId).Include(uw => uw.Movie).ToListAsync();
+                return Ok(userWatchlist);
+            }
+
+            return BadRequest("You dont have a watchlist yet, make sure to add movies to your watchlist");
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteWatchlist()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var watchlistToBeDeleted = await _context.UserWatchLists
+                .Where(wl => wl.UserId == userId)
+                .FirstAsync();
+             
+            if(watchlistToBeDeleted != null)
+            {
+                _context.UserWatchLists.Remove(watchlistToBeDeleted);
+                await _context.SaveChangesAsync();
+                return Ok("Your playlist has sucessfully been deleted");
+            }
+            else
+            {
+                return NotFound("No playlist found to be deleted");
+            }
+
+            
         }
     }
 }
