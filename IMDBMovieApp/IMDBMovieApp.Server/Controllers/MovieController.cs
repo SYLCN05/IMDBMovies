@@ -16,7 +16,7 @@ namespace MovieApp.Server.Controllers
         {
             _context = context;
         }
-        [HttpGet("GetMovies")]
+        [HttpGet]
         public async Task<IEnumerable<Movie>> GetMovies(int pageIndex=0, int pageSize=10)
         {
             if(pageIndex >=0 && pageIndex <= 99)
@@ -29,7 +29,7 @@ namespace MovieApp.Server.Controllers
             }
             
         }
-        [HttpGet("GetMovie")]
+        [HttpGet]
         public async Task<IActionResult> GetMovie(int movieId)
         {
             if (movieId >=1 && movieId <= 1000 )

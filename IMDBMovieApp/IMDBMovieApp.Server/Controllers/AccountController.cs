@@ -24,7 +24,7 @@ namespace MovieApp.Server.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("RegisterUser")]
+        [HttpPost]
         public async Task<ActionResult> RegisterUser(RegisterUserDTO userInput)
         {
             if (ModelState.IsValid)
@@ -47,7 +47,7 @@ namespace MovieApp.Server.Controllers
             return BadRequest("User can't be created");
         }
 
-        [HttpPost("Login")]
+        [HttpPost]
         public async Task<ActionResult> Login(LoginUserDTO loginInput)
         {
             try
