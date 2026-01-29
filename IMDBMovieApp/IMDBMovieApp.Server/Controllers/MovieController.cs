@@ -121,5 +121,29 @@ namespace MovieApp.Server.Controllers
 
             
         }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMovieFromWatchlist(int movieId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(userId != null)
+            {
+                var movieToBeDeleted = await _context.UserWatchLists
+                    .Where(wl => wl.UserId == userId && wl.MovieId == movieId)
+                    .FirstAsync();
+
+                if (movieToBeDeleted != null)
+                {
+                    _context.UserWatchLists
+                        .Remove(movieToBeDeleted);
+                    await _context.SaveChangesAsync();
+
+                    return Ok("Movie has been removed from your playlist");
+                }
+            }
+            return BadRequest();
+        }
     }
 }
